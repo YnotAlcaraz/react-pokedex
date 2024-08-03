@@ -1,0 +1,128 @@
+#root {
+  margin: 0;
+  padding: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+* {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 12px;
+}
+
+p {
+  padding: 0px;
+  margin: 0px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header {
+  background-color: #ee1515;
+  width: 100%;
+  margin: 0;
+  padding: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-bottom-color: #222224;
+  border-bottom: 20px solid;
+}
+
+.logo_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo_container img {
+  width: 200px;
+  height: auto;
+}
+
+.page_counter {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  justify-content: center;
+}
+
+.page_counter_currentPage {
+  font-size: 20px;
+}
+
+.page_counter_other_pages {
+  font-size: 18px;
+  margin: 0px 5px 0px 5px;
+}
+
+.pokemon_list {
+  display: flex;
+  justify-content: flex-start;
+  align-items: start;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.pokemon_card {
+  width: 250px;
+  height: 300px;
+  margin: 10px;
+  border-radius: 10px;
+  border-color: #222224;
+  border: 1px solid;
+}
+
+.pokemon_card_center_content {
+  width: 200px;
+  height: 300px;
+  background-image: url("src/assets/images/pokemon_background.png");
+  background-size: cover;
+  margin: 10px;
+  border-radius: 10px;
+  border-color: #222224;
+  border: 1px solid;
+  align-content: center;
+}
+
+.pokemon_card_top {
+  background-image: url("src/assets/images/pokemon_background.png");
+  background-size: cover;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100px;
+  margin: 0px 20px 20px 20px;
+}
+
+.pokemon_card_loading {
+  width: 150px;
+}
+
+.weight_height_row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.pokemon_card_stat_row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.pokemon_card_stat_name {
+  width: 100px;
+  text-align: start;
+}
+
+.pokemon_card_stat_number {
+  width: 20px;
+  text-align: right;
+}
