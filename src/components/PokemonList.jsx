@@ -35,10 +35,16 @@ const PokemonList = () => {
             const { color: pokemonSpecies } = await getSpecies(
               pokemonDetails.species.url
             );
+
             return {
-              ...pokemon,
-              ...pokemonDetails,
+              base_experience: pokemonDetails.base_experience,
+              height: pokemonDetails.height,
+              name: pokemon.name,
               species_color: pokemonSpecies.name,
+              sprites: pokemonDetails.sprites,
+              stats: pokemonDetails.stats,
+              types: pokemonDetails.types,
+              weight: pokemonDetails.weight,
             };
           })
         );
@@ -78,9 +84,14 @@ const PokemonList = () => {
           pokemonDetails.species.url
         );
         const pokemonData = {
-          ...pokemonResponse.data,
-          ...pokemonDetails,
+          base_experience: pokemonDetails.base_experience,
+          height: pokemonDetails.height,
+          name: pokemonResponse.data.name,
           species_color: pokemonSpecies.name,
+          sprites: pokemonDetails.sprites,
+          stats: pokemonDetails.stats,
+          types: pokemonDetails.types,
+          weight: pokemonDetails.weight,
         };
 
         setFilteredPokemonList([pokemonData]);
@@ -158,9 +169,14 @@ const PokemonList = () => {
               pokemonDetails.species.url
             );
             return {
-              ...pokemon,
-              ...pokemonDetails,
+              base_experience: pokemonDetails.base_experience,
+              height: pokemonDetails.height,
+              name: pokemon.name,
               species_color: pokemonSpecies.name,
+              sprites: pokemonDetails.sprites,
+              stats: pokemonDetails.stats,
+              types: pokemonDetails.types,
+              weight: pokemonDetails.weight,
             };
           })
         );
