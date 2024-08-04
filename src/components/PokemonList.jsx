@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getPokemon,
   getPokemonPage,
@@ -6,11 +6,7 @@ import {
 } from "../services/pokemonServices";
 import PokemonCard from "./PokemonCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faArrowRight,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "./Spinner";
 import PageCounter from "./PageCounter";
 
@@ -22,12 +18,14 @@ const PokemonList = ({ searchValue }) => {
   const [nextUrl, setNextUrl] = useState("");
   const [filteredPokemonList, setFilteredPokemonList] = useState([]);
 
+  let currentPageOffset = useRef(0);
+
   //TODO: Buscador, diseño, guardar data en caché
 
   useEffect(() => {
     const fetchPokemons = async () => {
       setIsLoading(true);
-      const pokemonResponse = await getPokemons();
+      const pokemonResponse = await getPokemonPage(currentPageOffset.current);
       setPokemonList(pokemonResponse.results);
       setFilteredPokemonList(pokemonResponse.results);
       setPreviousUrl(pokemonResponse.previous);
@@ -57,10 +55,9 @@ const PokemonList = ({ searchValue }) => {
 
   const onPreviousPage = async () => {
     setIsLoading(true);
+    currentPageOffset.current -= 1;
+    const pokemonResponse = await getPokemonPage(currentPageOffset.current);
     setCurrentPage(currentPage - 1);
-    const pokemonResponse = await getPokemonPage(previousUrl);
-    setPreviousUrl(pokemonResponse.previous);
-    setNextUrl(pokemonResponse.next);
     setPokemonList(pokemonResponse.results);
     setFilteredPokemonList(pokemonResponse.results);
     setIsLoading(false);
@@ -68,10 +65,19 @@ const PokemonList = ({ searchValue }) => {
 
   const onNextPage = async () => {
     setIsLoading(true);
+    currentPageOffset.current += 1;
+    const pokemonResponse = await getPokemonPage(currentPageOffset.current);
     setCurrentPage(currentPage + 1);
-    const pokemonResponse = await getPokemonPage(nextUrl);
-    setPreviousUrl(pokemonResponse.previous);
-    setNextUrl(pokemonResponse.next);
+    setPokemonList(pokemonResponse.results);
+    setFilteredPokemonList(pokemonResponse.results);
+    setIsLoading(false);
+  };
+
+  const sendToFirstPage = async () => {
+    setIsLoading(true);
+    currentPageOffset.current = 0;
+    const pokemonResponse = await getPokemonPage(currentPageOffset.current);
+    setCurrentPage(1);
     setPokemonList(pokemonResponse.results);
     setFilteredPokemonList(pokemonResponse.results);
     setIsLoading(false);
@@ -87,6 +93,7 @@ const PokemonList = ({ searchValue }) => {
           onPreviousPage={onPreviousPage}
           onNextPage={onNextPage}
           nextUrl={nextUrl}
+          sendToFirstPage={sendToFirstPage}
         />
       )}
 
@@ -109,28 +116,6 @@ const PokemonList = ({ searchValue }) => {
           )}
         </div>
       )}
-
-      {searchValue.trim().trim().length <= 0 && !isLoading ? (
-        <div className="page_counter">
-          {currentPage > 1 ? (
-            <>
-              <button onClick={onPreviousPage}>
-                <FontAwesomeIcon icon={faArrowLeft} />
-              </button>
-              <p className="page_counter_other_pages">{currentPage - 1}</p>
-            </>
-          ) : null}
-          <p className="page_counter_currentPage">{currentPage}</p>
-          {nextUrl ? (
-            <>
-              <p className="page_counter_other_pages">{currentPage + 1}</p>
-              <button onClick={onNextPage}>
-                <FontAwesomeIcon icon={faArrowRight} />
-              </button>
-            </>
-          ) : null}
-        </div>
-      ) : null}
     </>
   );
 };

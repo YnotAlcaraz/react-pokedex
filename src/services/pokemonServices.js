@@ -12,9 +12,11 @@ export const getPokemons = async () => {
   }
 };
 
-export const getPokemonPage = async (url) => {
+export const getPokemonPage = async (page) => {
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(
+      `${host}pokemon/?offset=${page * 20}$limit=20`
+    );
     return response.data;
   } catch (err) {
     console.log(`Error al obtener la lista de Pokemons de ${url} \n${err}`);

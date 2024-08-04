@@ -1,7 +1,13 @@
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const PageCounter = ({ currentPage, onPreviousPage, onNextPage, nextUrl }) => {
+const PageCounter = ({
+  currentPage,
+  onPreviousPage,
+  onNextPage,
+  nextUrl,
+  sendToFirstPage,
+}) => {
   return (
     <div>
       <div className="page_counter">
@@ -24,7 +30,9 @@ const PageCounter = ({ currentPage, onPreviousPage, onNextPage, nextUrl }) => {
         ) : null}
       </div>
       {currentPage > 1 ? (
-        <p>Volver al inicio</p>
+        <p onClick={sendToFirstPage} className="text_button">
+          Volver al inicio
+        </p>
       ) : (
         //TODO
         <p style={{ color: "white" }}> . </p>
