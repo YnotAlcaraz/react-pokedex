@@ -7,6 +7,7 @@ const PokemonCard = ({ pokemonData }) => {
   const [borderColor, setBorderColor] = useState("");
 
   useEffect(() => {
+    //? Se toman los colores de los pokemon y se buscan en PokemonSpeciesColor para utilizarlos en la tarjeta
     setBackgroundColor(PokemonSpeciesColor[pokemonData.species_color]);
     setBorderColor(PokemonSpeciesColor[`${pokemonData.species_color}Border`]);
   }, [pokemonData]);

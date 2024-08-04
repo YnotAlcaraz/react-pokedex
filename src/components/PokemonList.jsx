@@ -20,67 +20,87 @@ const PokemonList = () => {
   let currentPageOffset = useRef(0);
   let maxItems = useRef(0);
 
+  //? Se obtiene el listado inicial de pokemons junto con la informacion detallada de cada uno
   useEffect(() => {
     const fetchPokemons = async () => {
-      setIsLoading(true);
-      const pokemonResponse = await getPokemonPage(currentPageOffset.current);
-      maxItems.current = pokemonResponse.count;
-      const pokeArray = await Promise.all(
-        pokemonResponse.results.map(async (pokemon) => {
-          const pokemonDetails = await getPokemon(pokemon.name);
-          const pokemonSpecies = await getSpecies(
-            pokemonDetails.data.species.url
-          );
-          return {
-            ...pokemon,
-            ...pokemonDetails.data,
-            species_color: pokemonSpecies.color.name,
-          };
-        })
-      );
-      setPokemonList(pokeArray);
-      setFilteredPokemonList(pokeArray);
-      setStoredPokemonList(pokeArray);
+      try {
+        setIsLoading(true);
+        const pokemonResponse = await getPokemonPage(currentPageOffset.current);
+        //? Se almacena el numero de pokemones totales para usarlo en el PageCounter
+        maxItems.current = pokemonResponse.count;
+        //? Se obtiene la información de los pokemones y se guardan en un nuevo array
+        const pokeArray = await Promise.all(
+          pokemonResponse.results.map(async (pokemon) => {
+            const { data: pokemonDetails } = await getPokemon(pokemon.name);
+            const { color: pokemonSpecies } = await getSpecies(
+              pokemonDetails.species.url
+            );
+            return {
+              ...pokemon,
+              ...pokemonDetails,
+              species_color: pokemonSpecies.name,
+            };
+          })
+        );
+
+        //? Se asigna el valor del array creado a los estados
+        setPokemonList(pokeArray);
+        setFilteredPokemonList(pokeArray);
+        setStoredPokemonList(pokeArray);
+      } catch (err) {
+        setPokemonList([]);
+        setFilteredPokemonList([]);
+        setStoredPokemonList([]);
+      }
       setIsLoading(false);
     };
 
     fetchPokemons();
   }, []);
 
+  //? Se busca un pokemon basado en el searchValue ingresado en el input de busqueda
   useEffect(() => {
     const fetchPokemon = async () => {
-      setIsLoading(true);
-      const pokemonResponse = await getPokemon(searchValue);
-      if (!pokemonResponse) {
-        setFilteredPokemonList([]);
-        setIsLoading(false);
-        return;
-      }
-      const { data: pokemonDetails } = await getPokemon(
-        pokemonResponse.data.name
-      );
-      const { color: pokemonSpecies } = await getSpecies(
-        pokemonDetails.species.url
-      );
-      const pokemonData = {
-        ...pokemonResponse.data,
-        ...pokemonDetails,
-        species_color: pokemonSpecies.name,
-      };
+      try {
+        setIsLoading(true);
+        const pokemonResponse = await getPokemon(searchValue);
+        //? Si no se encontró un pokemon, se vacía filteredPokemon list para mostrar NotFound, se settea isLoading a false y se retorna para no continuar;
+        if (!pokemonResponse) {
+          setFilteredPokemonList([]);
+          setIsLoading(false);
+          return;
+        }
+        //? Se obtiene la información del pokemon, se crea un nuevo objeto con ella y se guarda en filteredPokemonList para renderizarlo en pantalla
+        const { data: pokemonDetails } = await getPokemon(
+          pokemonResponse.data.name
+        );
+        const { color: pokemonSpecies } = await getSpecies(
+          pokemonDetails.species.url
+        );
+        const pokemonData = {
+          ...pokemonResponse.data,
+          ...pokemonDetails,
+          species_color: pokemonSpecies.name,
+        };
 
-      pokemonData
-        ? setFilteredPokemonList([pokemonData])
-        : setFilteredPokemonList([]);
+        setFilteredPokemonList([pokemonData]);
+      } catch (err) {
+        setFilteredPokemonList([]);
+      }
       setIsLoading(false);
     };
-    if (searchValue.length > 0) {
+
+    //? Si searchValue contiene información, se ejecuta la función de búsqueda
+    if (searchValue.trim().length > 0) {
       fetchPokemon();
     } else {
+      //? Si searchValue está vacío, se asigna el valor de pokemonList a filteredList
       setFilteredPokemonList(pokemonList);
       setIsLoading(false);
     }
   }, [searchValue]);
 
+  //? Al retroceder a la página anterior se hace siempre desde memoria
   const onPreviousPage = async () => {
     setIsLoading(true);
     const previousIndex = (currentPageOffset.current - 1) * 20;
@@ -96,8 +116,24 @@ const PokemonList = () => {
     setIsLoading(false);
   };
 
+  //? Se envía al usuario a la primera página, se limpian el valor del input y searchValue
+  const sendToFirstPage = async () => {
+    const searchInput = document.getElementById("search_input");
+    searchInput.value = "";
+    setSearchValue("");
+    setIsLoading(true);
+    currentPageOffset.current = 0;
+    const slicedPokemonList = storedPokemonList.slice(0, 20);
+    setCurrentPage(1);
+    setPokemonList(slicedPokemonList);
+    setFilteredPokemonList(slicedPokemonList);
+    setIsLoading(false);
+  };
+
+  //? Se envía al usuario a la siguiente página
   const onNextPage = async () => {
     setIsLoading(true);
+    //? Se valida si los siguientes elementos ya se encuentran en memoria, si lo están, se toman desde ahí
     if ((currentPageOffset.current + 1) * 20 < storedPokemonList.length) {
       const nextIndex = (currentPageOffset.current + 1) * 20;
       const slicedPokemonList = storedPokemonList.slice(
@@ -110,41 +146,35 @@ const PokemonList = () => {
       setPokemonList(slicedPokemonList);
       setFilteredPokemonList(slicedPokemonList);
     } else {
-      currentPageOffset.current += 1;
-      const pokemonResponse = await getPokemonPage(currentPageOffset.current);
-      const pokeArray = await Promise.all(
-        pokemonResponse.results.map(async (pokemon) => {
-          const pokemonDetails = await getPokemon(pokemon.name);
-          const pokemonSpecies = await getSpecies(
-            pokemonDetails.data.species.url
-          );
-          return {
-            ...pokemon,
-            ...pokemonDetails.data,
-            species_color: pokemonSpecies.color.name,
-          };
-        })
-      );
+      //? Si no están en memoria, se hace un get a la API y se almacenan en memoria para su futuro uso
+      try {
+        currentPageOffset.current += 1;
+        const pokemonResponse = await getPokemonPage(currentPageOffset.current);
+        //? Se obtiene la información de los pokemones y se guardan en un nuevo array
+        const pokeArray = await Promise.all(
+          pokemonResponse.results.map(async (pokemon) => {
+            const { data: pokemonDetails } = await getPokemon(pokemon.name);
+            const { color: pokemonSpecies } = await getSpecies(
+              pokemonDetails.species.url
+            );
+            return {
+              ...pokemon,
+              ...pokemonDetails,
+              species_color: pokemonSpecies.name,
+            };
+          })
+        );
 
-      setStoredPokemonList([...storedPokemonList, ...pokeArray]);
-
-      setCurrentPage(currentPage + 1);
-      setPokemonList(pokeArray);
-      setFilteredPokemonList(pokeArray);
+        //? Se asigna el valor del array creado a los estados
+        setStoredPokemonList([...storedPokemonList, ...pokeArray]);
+        setCurrentPage(currentPage + 1);
+        setPokemonList(pokeArray);
+        setFilteredPokemonList(pokeArray);
+      } catch (err) {
+        //? En caso de error, se manda al usuario a la primera página
+        sendToFirstPage();
+      }
     }
-    setIsLoading(false);
-  };
-
-  const sendToFirstPage = async () => {
-    const searchInput = document.getElementById("search_input");
-    searchInput.value = "";
-    setSearchValue("");
-    setIsLoading(true);
-    currentPageOffset.current = 0;
-    const slicedPokemonList = storedPokemonList.slice(0, 20);
-    setCurrentPage(1);
-    setPokemonList(slicedPokemonList);
-    setFilteredPokemonList(slicedPokemonList);
     setIsLoading(false);
   };
 
