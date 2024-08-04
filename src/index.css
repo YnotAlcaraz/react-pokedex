@@ -19,6 +19,17 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  position: relative;
+}
+
+.small_bold_text {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.regular_bold_text {
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .spinner {
@@ -44,8 +55,8 @@ body {
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
-  border-bottom-color: #222224;
-  border-bottom: 20px solid;
+  border-bottom: 20px solid #222224;
+  z-index: 1;
 }
 
 .search_container {
@@ -100,21 +111,40 @@ input:focus {
   text-align: start;
   margin-bottom: 0px;
   margin-left: 10px;
+  margin-top: 80px;
 }
 
 .page_counter {
   margin-top: 10px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-bottom: 10px;
+  border: 10px solid #222224;
+  padding: 10px;
+  width: 120px;
+  height: 120px;
+  border-radius: 100px;
+  z-index: 2;
+  position: absolute;
+  background-color: white;
+  left: calc(50% - 80px);
+  transform: translateY(-100px);
+  gap: 5px;
+}
+
+.page_counter_child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .page_counter button {
   border-radius: 100px;
   border: 1px solid #616161;
-  height: 30px;
-  width: 30px;
+  height: 25px;
+  width: 25px;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -135,6 +165,7 @@ input:focus {
 }
 
 .pokemon_list {
+  margin-top: 80px;
   display: flex;
   justify-content: flex-start;
   align-items: start;
@@ -255,4 +286,48 @@ input:focus {
 .pokemon_card_stat_number {
   width: 20px;
   text-align: right;
+}
+
+.not_found p {
+  padding-top: 10px;
+}
+
+.not_found {
+  padding-top: 30px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.not_found_subtitle {
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.not_found_title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.not_found img {
+  width: 400px;
+}
+@media (max-width: 730px) {
+  .header {
+    height: 270px;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .pokemon_list {
+    margin-top: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
 }

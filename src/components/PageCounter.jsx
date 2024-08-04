@@ -5,12 +5,12 @@ const PageCounter = ({
   currentPage,
   onPreviousPage,
   onNextPage,
-  nextUrl,
+  maxPages,
   sendToFirstPage,
 }) => {
   return (
-    <div>
-      <div className="page_counter">
+    <div className="page_counter">
+      <div className="page_counter_child">
         {currentPage > 1 ? (
           <>
             <button onClick={onPreviousPage}>
@@ -20,7 +20,7 @@ const PageCounter = ({
           </>
         ) : null}
         <p className="page_counter_currentPage">{currentPage}</p>
-        {nextUrl ? (
+        {maxPages > currentPage ? (
           <>
             <p className="page_counter_other_pages">{currentPage + 1}</p>
             <button onClick={onNextPage}>
@@ -29,13 +29,10 @@ const PageCounter = ({
           </>
         ) : null}
       </div>
-      {currentPage > 1 ? (
+      {currentPage > 1 && (
         <p onClick={sendToFirstPage} className="text_button">
           Volver al inicio
         </p>
-      ) : (
-        //TODO
-        <p style={{ color: "white" }}> . </p>
       )}
     </div>
   );

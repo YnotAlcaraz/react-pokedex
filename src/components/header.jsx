@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { context } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -6,24 +6,24 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 const Header = () => {
   const [searchValue, setSearchValue] = useContext(context);
   //? Se crea una variable para no actualizar el estado en cada onChange
-  let stringValue = "";
+  let stringValue = useRef("");
 
   const handleInputChange = ({ target: input }) => {
-    stringValue = input.value;
-    if (stringValue.length === 0) {
-      setSearchValue(stringValue);
+    stringValue.current = input.value;
+    if (stringValue.current.length === 0) {
+      setSearchValue(stringValue.current);
     }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      setSearchValue(stringValue);
+      setSearchValue(stringValue.current);
       event.preventDefault();
     }
   };
 
   const onPressSearchButton = () => {
-    setSearchValue(stringValue);
+    setSearchValue(stringValue.current);
   };
 
   return (
@@ -38,6 +38,7 @@ const Header = () => {
           onKeyDown={handleKeyDown}
           placeholder="Ingresa el nombre del Pokemon"
           className="search_input"
+          id="search_input"
         />
         <button onClick={onPressSearchButton}>
           <FontAwesomeIcon icon={faMagnifyingGlass} />

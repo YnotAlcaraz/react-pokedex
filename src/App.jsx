@@ -11,7 +11,7 @@ function App() {
   return (
     <context.Provider value={[searchValue, setSearchValue]}>
       <Header />
-      <PokemonList searchValue={searchValue} />
+      <PokemonList />
     </context.Provider>
   );
 }
